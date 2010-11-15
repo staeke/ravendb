@@ -7,6 +7,7 @@ using System.Runtime.ConstrainedExecution;
 using System.Threading;
 using Microsoft.Isam.Esent.Interop;
 using Raven.Database;
+using Raven.Database.Config;
 using Raven.Database.Exceptions;
 using Raven.Database.Impl;
 using Raven.Database.Plugins;
@@ -116,6 +117,16 @@ namespace Raven.Storage.Esent
                     Instance = instance
                 };
             }
+	    }
+
+	    public bool HandleException(Exception exception)
+	    {
+	        var e = exception as EsentErrorException;
+            if (e == null)
+                return false;
+            // we need to protect ourselve from rollbacks happening in an async manner
+            // after the database was already shut down.
+	        return e.Error == JET_err.InvalidInstance;
 	    }
 
 	    #endregion

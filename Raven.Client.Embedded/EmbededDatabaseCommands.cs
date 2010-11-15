@@ -3,10 +3,12 @@ using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
 using Newtonsoft.Json.Linq;
+using Raven.Abstractions.Data;
 using Raven.Client.Document;
 using Raven.Client.Indexes;
 using Raven.Database;
 using Raven.Database.Data;
+using Raven.Database.Impl;
 using Raven.Database.Indexing;
 using Raven.Database.Json;
 using Raven.Database.Storage;
@@ -75,7 +77,7 @@ namespace Raven.Client.Client
         public NameValueCollection OperationsHeaders { get; set; }
 
         /// <summary>
-        /// Gets the docuent for the specified key.
+        /// Gets the document for the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <returns></returns>
@@ -284,7 +286,7 @@ namespace Raven.Client.Client
         /// <summary>
         /// Executed the specified commands as a single batch
         /// </summary>
-        /// <param name="commandDatas">The command datas.</param>
+        /// <param name="commandDatas">The command data.</param>
         public BatchResult[] Batch(ICommandData[] commandDatas)
 		{
 			foreach (var commandData in commandDatas)
@@ -390,6 +392,17 @@ namespace Raven.Client.Client
 	    {
 	        throw new NotSupportedException("Multiple databases are not supported in the embedded API currently");
 	    }
+
+
+        /// <summary>
+        /// Returns a list of suggestions based on the specified suggestion query.
+        /// </summary>
+        /// <param name="index">The index to query for suggestions</param>
+        /// <param name="suggestionQuery">The suggestion query.</param>
+        public SuggestionQueryResult Suggest(string index, SuggestionQuery suggestionQuery)
+        {
+            return database.ExecuteSuggestionQuery(index, suggestionQuery);
+        }
 
 	    #endregion
 
